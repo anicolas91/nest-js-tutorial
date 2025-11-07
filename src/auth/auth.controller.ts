@@ -1,4 +1,9 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import type { AuthDto } from './dto';
 
@@ -7,9 +12,16 @@ export class AuthController {
   constructor(private authService: AuthService) {} /// I don't care how to instantiate, just do it for me
 
   @Post('signup')
-  signup(@Body() dto: AuthDto) {
+  signup(
+    @Body('email') email: string,
+    @Body('password', ParseIntPipe) /// it checks if the input is a number, and errors if not
+    password: string,
+  ) {
     console.log({
-      dto,
+      email,
+      typeOfEmail: typeof email,
+      password,
+      typeOfPassword: typeof password,
     });
     return this.authService.signup();
   }

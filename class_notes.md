@@ -75,3 +75,42 @@ On the newer nest js things are stricter, you need to specify you are actually s
 ## validation
 
 What happens when the email/password is empty? we need to use validators.
+
+First, you can check the data type you got via:
+
+```typescript
+typeOfEmail: typeof email,
+```
+
+And you can also set up the type of valid value via:
+
+```typescript
+@Body('password', ParseIntPipe)
+```
+
+for example, in this case we want a number, if its a string it will throw an error:
+
+```bash
+{
+	"message": "Validation failed (numeric string is expected)",
+	"error": "Bad Request",
+	"statusCode": 400
+}
+```
+
+It will stop the execution of the code even if it gets to the log:
+
+```typescript
+  signup(
+    @Body('email') email: string,
+    @Body('password', ParseIntPipe) /// it will stop here
+    password: string,
+  ) {
+    console.log({
+      email,
+      typeOfEmail: typeof email,
+      password,
+      typeOfPassword: typeof password,
+    });
+
+```
