@@ -19,3 +19,59 @@ npx prisma generate \\ this generates artifacts
 
 npx prisma studio \\ UI dashboard
 ```
+
+- you can do `export class PrismaService extends PrismaClient` to have the thing connect to prisma client.
+
+- adding to auth.module imports means that you can give access to that import and its contents into anything else auth related.
+
+- you need to import on auth module, but also the user/bookmark needs access to the db, and other ones. Do you need to import every time? no, then make it `@Global` so that the service is available to all modules.
+
+## decorators
+
+- Anything with a `@` is a decorator, they sorta come from expres js... the one that you can use to make your own is `@Req`, which is the thing to call the express js bits.
+
+- You can go even one more up and replace an entire thing with a decorator. For example, instead of doing:
+
+```typescript
+signup(@Req() req: Request) {
+        console.log(req.body)
+```
+
+you can do
+
+```typescript
+signup(@Body() dto: any) {
+    console.log({
+      dto,
+    });
+```
+
+where dto: data transfer object
+
+The advantage of using decorators is that you can get the correct body, you dont have to worry about it.
+
+However we don't know the shape of the answer... so for that you create a dto folder with your structure, called `auth.dto.ts` and `index.ts`
+
+With `dto` you can set up the shape and you can just import the dto itself to say what shape and stuff is that one.
+
+Dto allows you to switch to fastify and other such things.
+
+### mini note:
+
+The tutorial says that we should use:
+
+```typescript
+import { AuthDto } from './dto';
+```
+
+but it actually needs:
+
+```typescript
+import type { AuthDto } from './dto';
+```
+
+On the newer nest js things are stricter, you need to specify you are actually setting up a `type`... nest js is using es lint, so things are stricter now.
+
+## validation
+
+What happens when the email/password is empty? we need to use validators.

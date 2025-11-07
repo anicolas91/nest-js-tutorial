@@ -4,8 +4,6 @@ import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { PrismaService } from './prisma/prisma.service';
-import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [AuthModule, UserModule, BookmarkModule, PrismaModule],
