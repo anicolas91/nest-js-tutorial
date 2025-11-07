@@ -114,3 +114,52 @@ It will stop the execution of the code even if it gets to the log:
     });
 
 ```
+
+## Pipes
+
+We get these built-in pipes (see nest JS documentation on [pipes](https://docs.nestjs.com/pipes)):
+
+- ValidationPipe
+- ParseIntPipe
+- ParseFloatPipe
+- ParseBoolPipe
+- ParseArrayPipe
+- FarseUUIDPipe
+- ParseEnumPipe
+- DefaultValuePipe
+
+We also have something called `class-validator` and `class-transformer`.
+
+With these libraries you can apply these validations/transformations to the dto like so:
+
+```typescript
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
+
+export class AuthDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+}
+```
+
+Which is neat because its so very readable.
+
+Remember to tell the app to use the validation pipes as global pipes, like so:
+
+```typescript
+app.useGlobalPipes(new ValidationPipe());
+```
+
+And to change the import of AuthDto to not specify it's a type, because now its a class:
+
+```typescript
+import { AuthDto } from './dto';
+```
