@@ -115,7 +115,7 @@ It will stop the execution of the code even if it gets to the log:
 
 ```
 
-## Pipes
+### Pipes
 
 We get these built-in pipes (see nest JS documentation on [pipes](https://docs.nestjs.com/pipes)):
 
@@ -128,7 +128,11 @@ We get these built-in pipes (see nest JS documentation on [pipes](https://docs.n
 - ParseEnumPipe
 - DefaultValuePipe
 
-We also have something called `class-validator` and `class-transformer`.
+We also have something called `class-validator` and `class-transformer`. You can install them via:
+
+```bash
+yarn add class-validator class-transformer
+```
 
 With these libraries you can apply these validations/transformations to the dto like so:
 
@@ -162,4 +166,34 @@ And to change the import of AuthDto to not specify it's a type, because now its 
 
 ```typescript
 import { AuthDto } from './dto';
+```
+
+### funny injections
+
+if someone is trying to chuck in more data than expected, that may not be ideal. So you can do:
+
+```typescript
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+  }),
+);
+```
+
+To make sure that whatever comes back is only the stuff youve set up. Like for example just the email and the password, nothing else.
+
+## encryption
+
+We are using argon2 because of reasons. It says that it is a better solution than decrypt because you can hash more that one stuff.
+
+install via
+
+```bash
+yarn add argon2
+```
+
+And generate the hash via:
+
+```typescript
+const hash = argon.hash(dto.password);
 ```
