@@ -197,3 +197,24 @@ And generate the hash via:
 ```typescript
 const hash = argon.hash(dto.password);
 ```
+
+## sending only select data to db
+
+Turns out prisma can let you select from all the data you have, a selection of data you want to add to the db. For example, in this case you don't want the hash to be saved, so you do"
+
+```typescript
+const user = await this.prisma.user.create({
+  data: {
+    email: dto.email,
+    hash,
+  },
+  select: {
+    // this bit selects what to save on the db, skips the rest
+    id: true,
+    email: true,
+    createdAt: true,
+  },
+});
+```
+
+However that's apparently a 'lot of logic to write', so people use transformers instead.
