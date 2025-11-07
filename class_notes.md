@@ -218,3 +218,71 @@ const user = await this.prisma.user.create({
 ```
 
 However that's apparently a 'lot of logic to write', so people use transformers instead.
+
+## avoiding creation of several db entries for the same email
+
+Everytime we send a request, we createa new id even if the email is the same. to fix that we do:
+
+On the schema.prisma, under the user table, add `@unique`:
+
+```typescript
+email String @unique
+```
+
+### connecting between prisma models
+
+For the bookmarks to get the association of what user they belong to, simply do a `@relation` decorator on hte bookmark model
+
+```typescript
+  userId Int
+  user User @relation(fields: [userId],references: [id])
+```
+
+That way on the user model you just do:
+
+```typescript
+  bookmarks Bookmark[]
+```
+
+Don't forget to add the `@@map` at the end of each model
+
+### addressing errir from unique constraint
+
+if we submit data with an email that we already had, we will get this error:
+
+```bash
+{
+	"statusCode": 500,
+	"message": "Internal server error"
+}
+```
+
+And on the logs of the actual app, we get the message
+
+```bash
+const user = await this.prisma.user.create(
+Unique constraint failed on the fields: (`email`)
+```
+
+Which means it found out the email is a duplicate, and so it's erroring out.
+
+to fix, do a try/catch block, where you catch as such:
+
+```typescript
+} catch (error) {
+      if (
+        error instanceof
+        PrismaClientKnownRequestError
+      ) {
+        // this is the error code for duplicates
+        if (error.code === 'P2002') {
+          throw new ForbiddenException(
+            'Credentials taken',
+          );
+        }
+        throw error; // if ti was not p2002, just throw back the error
+      }
+    }
+```
+
+In this case we know that `P2002` is the error code for a duplicte value. So this works whenever someone sends a duplicate email.
