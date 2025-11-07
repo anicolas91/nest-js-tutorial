@@ -8,17 +8,20 @@
 ## prisma
 
 - you can use prisma to have the schema and the sql written for you, and to import things super nicely instead of hardcoding modules.
-  useful commands are:
+
+useful commands are:
 
 ```bash
 npx prisma --help
 
 npx prisma migrate dev \\ this migrates things from prisma so you can access them on typescript, the db, etc
 
-npx prisma generate \\ this generates artifacts
+npx prisma generate \\ this generates artifacts and updates TS
 
 npx prisma studio \\ UI dashboard
 ```
+
+If you ever update the schema, freel free to do on VS code `> TypeScript: Restart TS Server`
 
 - you can do `export class PrismaService extends PrismaClient` to have the thing connect to prisma client.
 
@@ -246,7 +249,7 @@ That way on the user model you just do:
 
 Don't forget to add the `@@map` at the end of each model
 
-### addressing errir from unique constraint
+### addressing error from unique constraint
 
 if we submit data with an email that we already had, we will get this error:
 
@@ -286,3 +289,40 @@ to fix, do a try/catch block, where you catch as such:
 ```
 
 In this case we know that `P2002` is the error code for a duplicte value. So this works whenever someone sends a duplicate email.
+
+## finding unique user data
+
+For the sign in bit, the user gives a username and a password. The first thing is to try and find the user matching email. To do that you can use `findUnique`:
+
+```typescript
+const user = await this.prisma.user.findUnique();
+```
+
+Note that the variable used during filtering HAS TO BE a `@unique` field
+
+## Automatically respawn db
+
+We've so far manually respawn and migrate the prisma db... which is a chore. We can automate that inside a package.json.
+
+We create under `scripts`:
+
+```json
+"prisma:dev:deploy": "prisma migrate deploy",
+"db:dev:rm": "docker compose rm dev-db -s -f -v",
+"db:dev:up": "docker compose up dev-db -d",
+"db:dev:restart": "yarn db:dev:rm && yarn db:dev:up && sleep 1 && yarn prisma:dev:deploy",
+```
+
+which basically kills the docker container and restarts it again
+
+Fun fact, `prisma migrate deploy` helps to apply migrations and not create a new one all the time.
+
+## tracking the user (authentication and authorization)
+
+two options to know who the user is, and figure out permissions
+
+- sessions
+- json web token
+
+authentication: we identify the user
+authorization: we allow/disallow user to do some stuff
