@@ -326,3 +326,93 @@ two options to know who the user is, and figure out permissions
 
 authentication: we identify the user
 authorization: we allow/disallow user to do some stuff
+
+## config modules
+
+Instead of having hardcoded url variables with the postgres connection, we can instead use a config module.
+
+simply do:
+
+```bash
+yarn add @nestjs/config
+```
+
+It is usually implemented on the root module. Or in a custom module and implement it there. Like a validation one or something.
+
+So basically on the `app.module.ts` you just import:
+
+```typescript
+@Module({
+  imports: [
+    ConfigModule.forRoot({}),
+    ...
+  ],
+  ...
+```
+
+Notice that you need `forRoot` as an input. Also, this config module actually works off the dotenv library.
+
+The module uses a service, so you can import this service into somewhere else, like prisma.
+
+In any class to import a dependency injection, you need an injectable decorator.
+
+But you don't want to use prisma itself, instead you want a config module.
+
+You use the config module to import the postgres url instead of hardcoding it.
+
+You just do:
+
+```typescript
+config.get('DATABASE_URL');
+```
+
+As for exposing the prisma module at the app level, you cannot do the `@global` decorator, but you can do the `isGlobal: true`
+
+## Authentication
+
+Seems like we are going to use _passport_.
+
+In general, the user gives a username + password, we give them back a jwt.
+
+JWT gets passed with code, in other scenarios you get passed with every request via a session.
+
+Some people argue that JWT is bad for authentication. But writer disagrees.
+
+To install libraries you do
+
+```bash
+yarn add @nestjs/passport passport
+yarn add @nestjs/jwt passport-jwt
+yarn add -D @types/passport-jwt \\ this is a development dependency
+```
+
+and thats it.
+
+- _jwt_ - it signs in the code tokens. It uses the json web tokens library
+- _nest/passport_ - pours passport to the next js
+
+Some of this goes into our code, some of it goes into some folder called `strategy`
+
+When using JWT you will be using a refresh token, and those have other stuff like expiration date and such.
+
+We imported it in `auth.module.ts` so we have to do the same on `auth.service.ts` like so:
+
+auth module:
+
+```typescript
+imports: [JwtModule.register({})],
+```
+
+auth service:
+
+```typescript
+private jwt: JwtService
+```
+
+We then make a fucntion to convert user info into tokens called `signToken`
+
+this function calls `signAsync` and it gets as input a payload and some options for decoding.
+
+You call in your key via `.env` and `JWT_SECRET`
+
+You then have to return a token now instead of a user on `signin`.
