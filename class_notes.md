@@ -416,3 +416,13 @@ this function calls `signAsync` and it gets as input a payload and some options 
 You call in your key via `.env` and `JWT_SECRET`
 
 You then have to return a token now instead of a user on `signin`.
+
+You want to return an object with the token string inside.
+
+So now we have created an object with the token, and the user may want to get info about themselves, for that you need `strategy`
+
+## Strategy
+
+Strategy should extend the passport module and implement the jwt module... via `PassportStrategy` + the user bearer bit, optional expiration on/off, and the secret key
+
+It's a folder because we are specifying is for validation, it is its own thing, but we can also add `@Injectable` decorators like on auth. This way we can get our .env secrets.
