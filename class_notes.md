@@ -426,3 +426,7 @@ So now we have created an object with the token, and the user may want to get in
 Strategy should extend the passport module and implement the jwt module... via `PassportStrategy` + the user bearer bit, optional expiration on/off, and the secret key
 
 It's a folder because we are specifying is for validation, it is its own thing, but we can also add `@Injectable` decorators like on auth. This way we can get our .env secrets.
+
+NOTE: somehow i had to add a 'validate' section but dont know why.
+
+We have added `JwtStrategy` to the auth.module providers, and will be accessed if we have a valid strategy. This also means that we could use fb or google sign in stuff.
