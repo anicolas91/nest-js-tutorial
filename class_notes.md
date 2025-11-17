@@ -473,3 +473,75 @@ validate(payload: any) {
 and that will return the payload, and also attach it to hte user info.
 
 So, whatever value we pass on the `validate` function, gets appended to the user request object.
+
+So when you pass all that data through validate, you can then just request this data via `@Req() req: Request`, which is both from nestjs and express:
+
+```typescript
+getMe(@Req() req: Request) {
+    console.log(
+      {
+        user: req.user,
+      }
+    )
+    return 'user info';
+  }
+```
+
+If we do:
+
+```typescript
+validate(payload: any) {
+    return 'hi'; //payload;
+  }
+```
+
+Then 'hi' will be logged on the terminal, because we will attach whatever we validate to the request.
+
+## getting user info from access token
+
+We need to grab db so we need to call prisma, to get info from the access token, like user email etc.
+
+Basically we add on the constructor:
+
+```typescript
+constructor(
+    config: ConfigService,
+    private prisma: PrismaService, //you add this new bit
+  )
+```
+
+and the validate function now becomes:
+
+```typescript
+ async validate(payload: {
+    sub: number;
+    email: string;
+  }) {
+    // getting values
+    const user =
+      await this.prisma.user.findUnique({
+        where: {
+          id: payload.sub,
+        },
+      });
+    return payload;
+  }
+```
+
+NOTE: if you return on validate `return null` you will get a 401 unauthorized error. So don't do that.
+
+Don't forget to remove the hash when passing down the user info... on the 2025 nest js you need to handle null case + split:
+
+```typescript
+// Handle null case
+if (!user) {
+  throw new UnauthorizedException(
+    'User not found',
+  );
+}
+
+// split hash from the rest
+const { hash, ...userWithoutHash } = user;
+
+return userWithoutHash;
+```
