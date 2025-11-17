@@ -633,3 +633,55 @@ So with this you can edit this custom decorator in one place in case you need to
 ```typescript
 @GetUser('email') email: string
 ```
+
+### Setting up custom Http status
+
+So turns out most post request basically return a `201 created` note, which i guess happens because it works and then it creates the output data.
+
+So for that, maybe you want to just return a specific http response and not just the default 201 one. So for that you can add via decorator the status you want to return, like so:
+
+```typescript
+@HttpCode(HttpStatus.OK)
+@Post('signin')
+```
+
+So that way when you make a post request, you atually get `200 ok`. You can right-click on HttpStatus to see all the options available.
+
+It is handy to use on `sign in` because we do not really create a new resource when signing in, and so the 201 response is misleading.
+
+## Automated testing
+
+In a realistic scenario, you are not jumping back and forth within insomnia and your app, instead, you automatically try some tests to check that your app is working and doing what you expect.
+
+In testing you have:
+
+- unit testing - tries out the functions, like sign up, but it takes a ton of time. They are a good investment if this is a long term project
+- e2e testing - verifies the high level user journey in the app. User signs up, requests his profile, interacts with app, etc.
+- integration testing - testing modules and bits together to see if they interact well. Is the same token working correctly? is the exception throw correct?
+
+nest js is cools in that it already separates stuff by module/functionality.
+
+So we can define what segments of my app to test together.
+
+Testing takes the same amount of time as creating the app.
+
+You can do:
+
+- test driven development - you write your app as you test.
+- e2e testing - it allows to showcase the use of our app and prove it works.
+
+### default nest js tester
+
+Nest js already made a suggested test under the `test` folder.
+
+It ecommends `supertest` as the default library for e2e testing.
+
+### Pactum as tester
+
+In our case, we're going to use another library that the author recommended.
+
+It is called pactum, you can find information on their [documentation](https://pactumjs.github.io/), and we install via:
+
+```bash
+yarn add -D pactum
+```

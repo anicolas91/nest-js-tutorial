@@ -16,13 +16,7 @@ export class UserController {
   @UseGuards(JwtGuard)
   // This gets inside 'users/me'
   @Get('me')
-  getMe(
-    @GetUser() user: User,
-    @GetUser('email') email: string,
-  ) {
-    console.log({
-      email,
-    });
+  getMe(@GetUser() user: User) {
     return user;
   }
 }
