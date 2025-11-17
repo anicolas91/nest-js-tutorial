@@ -598,3 +598,38 @@ export class JwtGuard extends AuthGuard('jwt') {
 ```
 
 and import accordingly on the user controller.
+
+### Creating a custom decorator
+
+We are using right now the default decorators from imported libraries, however it may be cleaner to use a custom decorator for `getMe(@Req() req: Request)`.
+
+We start by creating a new folder under `src/auth/decorator` and adding `index.ts` and `get-user.decorator.ts` inside the folder.
+
+For syntax please refer to the nest js [documentation](https://docs.nestjs.com/custom-decorators)
+
+we use the sample from the documentation:
+
+```typescript
+export const GetUser = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx
+      .switchToHttp()
+      .getRequest();
+    return request.user;
+  },
+);
+```
+
+So now with the custom decortor you have:
+
+```typescript
+getMe(@GetUser() user: User) {
+    return user;
+  }
+```
+
+So with this you can edit this custom decorator in one place in case you need to add some extra details like, you want to use the decorator to return a specific dataset, like this:
+
+```typescript
+@GetUser('email') email: string
+```
