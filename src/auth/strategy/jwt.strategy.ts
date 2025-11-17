@@ -9,10 +9,13 @@ import {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(
   Strategy,
+  'jwt',
 ) {
-  validate(...args: any[]): unknown {
-    throw new Error('Method not implemented.');
+  validate(payload: any) {
+    //   You can do here any validation you want
+    return payload;
   }
+
   constructor(config: ConfigService) {
     super({
       jwtFromRequest:

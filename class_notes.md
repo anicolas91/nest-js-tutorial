@@ -430,3 +430,46 @@ It's a folder because we are specifying is for validation, it is its own thing, 
 NOTE: somehow i had to add a 'validate' section but dont know why.
 
 We have added `JwtStrategy` to the auth.module providers, and will be accessed if we have a valid strategy. This also means that we could use fb or google sign in stuff.
+
+## Accessing via other controllers
+
+So we have a valid token, but we have only our default signin/signup bits... lets create another controler module via
+
+```bash
+nest g controller user --no-spec
+```
+
+that creates a new `user.controller.ts` file.
+
+Using the decorator `@Get` with nothing else will try to catch things at root, whereas `@Get('test')` will try to find stuff inside a test folder.
+
+## guards
+
+When you want to add logic on how to activate a controller, you use guards.
+
+A guard is a fcn that stands in front of an endpoint, and allows/disallows that fcn to run.
+
+The guards that are compatible with the controller are inside `@nestjs/passport`
+
+`PassportStrategy` by default uses 'jwt' as the name of the strategy but you can name it whatever you want.
+
+When you add the guards, you also need the auth header.
+
+## validate
+
+turns out the instructor had forgotten to add the 'validate' portion on the JwtStrategy.
+
+Turns out, you can just add a 'validate' portion on the strategy, and put any validation you want to get the thing running
+
+```typescript
+validate(payload: any) {
+    //   You can do here any validation you want
+    console.log({ payload });
+    // appends payload to the user request
+    return payload;
+  }
+```
+
+and that will return the payload, and also attach it to hte user info.
+
+So, whatever value we pass on the `validate` function, gets appended to the user request object.
