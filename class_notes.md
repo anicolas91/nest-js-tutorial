@@ -685,3 +685,48 @@ It is called pactum, you can find information on their [documentation](https://p
 ```bash
 yarn add -D pactum
 ```
+
+### Getting started
+
+We need to start with
+
+- a custom testing database so we do not delete/create our actual data all the time
+- the prisma service associated with this database for testing, it should be cleaned up every time.
+
+We start by creating a testing module, in the style of the global module for the app shown in `app.module.ts`.
+
+So to do that, we first edit our `app.e2e-spec.ts` to do some dummy test:
+
+```typescript
+describe('App e2e', () => {
+  it.todo('should pass');
+});
+```
+
+And then we have nest js running the test for us via (its already written by default in `package.json`):
+
+```bash
+"test:e2e": "jest --config ./test/jest-e2e.json"
+```
+
+So just run
+
+```bash
+yarn test:e2e
+```
+
+Now, we actually create a testing module in the form of:
+
+```typescript
+describe('App e2e', () => {
+  beforeAll(async () => {
+    const moduleRef =
+      await Test.createTestingModule({
+        imports: [AppModule],
+      }).compile();
+  });
+  it.todo('should pass');
+});
+```
+
+Where we use moduleRef... which is jest, and the testing library from nest js. And we import the Main App Module in `app.module.ts` and compile and that's it.
