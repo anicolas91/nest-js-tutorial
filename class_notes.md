@@ -545,3 +545,56 @@ const { hash, ...userWithoutHash } = user;
 
 return userWithoutHash;
 ```
+
+And you can also just directly return `req.user` on the controller:
+
+```typescript
+getMe(@Req() req: Request) {
+    return req.user;
+  }
+```
+
+So now when we go get info via:
+
+```bash
+http://localhost:3333/users/me
+
+Authorization: Bearer xxxxxx
+```
+
+Now we get info back on the user:
+
+```bash
+{
+	"id": 6,
+	"createdAt": "2025-11-17T17:43:34.110Z",
+	"updatedAt": "2025-11-17T17:43:34.110Z",
+	"email": "margarito2@gmail.com",
+	"firstName": null,
+	"lastName": null
+}
+```
+
+So now, we can sign in, sign up, and get information on the user!
+
+## Enhancements
+
+### Creating custom guard
+
+So the `AuthGuard('jwt')` is using what is called a magic string, apparently that is very error prone, so it is recommended to abstract that bit into its own class. Meaning, we create a custom guard.
+
+We start by creating a new folder under `src/auth/guard` and adding `index.ts` and `jwt.guard.ts` inside the folder.
+
+you just create its own class as:
+
+```typescript
+import { AuthGuard } from '@nestjs/passport';
+
+export class JwtGuard extends AuthGuard('jwt') {
+  constructor() {
+    super();
+  }
+}
+```
+
+and import accordingly on the user controller.
