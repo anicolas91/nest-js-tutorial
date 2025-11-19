@@ -730,3 +730,32 @@ describe('App e2e', () => {
 ```
 
 Where we use moduleRef... which is jest, and the testing library from nest js. And we import the Main App Module in `app.module.ts` and compile and that's it.
+
+If you want it to run continuously and recompile automatically whenever something changes, simply do:
+
+```bash
+"test:e2e": "jest --watch --no-cache --config ./test/jest-e2e.json"
+```
+
+So that it continousley runs (`--watch`) and it clears cache every time (`--no-cache`)
+
+To make the test into an app itself, you do:
+
+```typescript
+let app: INestApplication;
+beforeAll(async () => {
+  const moduleRef =
+    await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+  app = moduleRef.createNestApplication();
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
+  await app.init();
+});
+```
+
+You are importing global modules ,and setting it up as a nest application.
